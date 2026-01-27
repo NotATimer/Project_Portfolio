@@ -88,9 +88,21 @@ int* /*Looks for the Mode*/ FindMode (int set[], int index, int *num_modes) {
     return modes;
 }
 
+float /*Calculates the Variance*/ VarianceCalculate(int set[], int index, float mean, bool is_sample) {
+    float sum = 0, difference = 0, variance = 0;
+    for(int i = 0;i < index;i++) {
+        difference = set[i] - mean;
+        difference *= difference;
+        sum += difference;
+    }
+    variance = sum / (is_sample ? (index - 1) : index);
+    return variance;
+
+}
+
 int main () {
     int *set, index = 0, number = 0, *modes, num_modes = 0;
-    float mean, median;
+    float mean, median, population_variance, sample_variance;
     printf("Statistical Calculator\nInput how many numbers you want to put in a set(Input 0 to exit)\n");
 
     //Memory allocation for the array
@@ -128,7 +140,9 @@ int main () {
     mean = MeanCalculate(set, index);
     median = MedianCalculate(set, index);
     modes = FindMode(set, index, &num_modes);
-    printf("\nResults\nSet (organized highest to lowest): ");
+    sample_variance = VarianceCalculate(set, index, mean, true);
+    population_variance = VarianceCalculate(set, index, mean, false);
+    printf("\nResults\nSet (organized lowest to highest): ");
     for(int i = 0;i<index;i++) { //loop that prints the arranged values of the array
         printf("%d ", set[i]);
     }
@@ -141,6 +155,7 @@ int main () {
         }
     }
     printf("\nMin: %d\nMax: %d\nRange: %d", set[0], set[index - 1], (set[index - 1] - set[0]));
+    printf("\nSample Variance: %.2f\nPopulation Variance: %.2f\nSample Standard Deviation: %.2f\nPopulation Standard Deviation: %.2f", sample_variance, population_variance, sqrt(sample_variance), sqrt(population_variance));
     free(modes);
     free(set);
 }
