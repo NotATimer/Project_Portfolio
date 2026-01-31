@@ -4,19 +4,26 @@
 #include <math.h>
 //Fucking hell man
 int sort (const void *a, const void *b) { //the sorting algorithm
-    int *x = (int *)a, *y = (int *)b;
-    return *x - *y; //x - y = positive number means higher, x - y = negative means lower number thus staying. Not too sure to explain ngl
+    double *x = (double *)a, *y = (double *)b;
+    if(*x > *y) {
+        return 1;
+    } else if(*x < *y) {
+        return -1;
+    }
+    else {
+        return 0;
+    } //x - y = positive number means higher, x - y = negative means lower number thus staying. Not too sure to explain ngl
 }
-float /*Calculates the Mean*/ MeanCalculate (int set[], int index) {
-    float sum = 0;
+double /*Calculates the Mean*/ MeanCalculate (double set[], int index) {
+    double sum = 0;
     for(int i = 0;i < index;i++) {
         sum += set[i];
     }
     return sum / index;
 }
 
-float /*Calculates the Median*/ MedianCalculate (int set[], int index) {
-    float median;
+double /*Calculates the Median*/ MedianCalculate (double set[], int index) {
+    double median;
     if(index % 2 == 0) { //EVEN
         median = (set[index / 2 - 1] + set[index / 2]) / 2.0;
     }
@@ -26,7 +33,7 @@ float /*Calculates the Median*/ MedianCalculate (int set[], int index) {
     return median;
 }
 
-int* /*Looks for the Mode*/ FindMode (int set[], int index, int *num_modes) {
+double* /*Looks for the Mode*/ FindMode (double set[], int index, int *num_modes) {
     int count = 1, max_count = 1;
     //First pass, finds the maximum count of the number that repeats the most
     for(int x = 1;x < index;x++) { //loop for finding maximum count
@@ -64,7 +71,7 @@ int* /*Looks for the Mode*/ FindMode (int set[], int index, int *num_modes) {
     }
 
     //Last pass, initializing the array of modes and returning
-    int *modes = malloc(mode_count * sizeof(int));
+    double *modes = malloc(mode_count * sizeof(double));
     int o = 0;
     count = 1;
 
@@ -88,8 +95,8 @@ int* /*Looks for the Mode*/ FindMode (int set[], int index, int *num_modes) {
     return modes;
 }
 
-float /*Calculates the Variance*/ VarianceCalculate(int set[], int index, float mean, bool is_sample) {
-    float sum = 0, difference = 0, variance = 0;
+double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, double mean, bool is_sample) {
+    double sum = 0, difference = 0, variance = 0;
     for(int i = 0;i < index;i++) {
         difference = set[i] - mean;
         difference *= difference;
@@ -101,8 +108,9 @@ float /*Calculates the Variance*/ VarianceCalculate(int set[], int index, float 
 }
 
 int main () {
-    int *set, index = 0, number = 0, *modes, num_modes = 0;
-    float mean, median, population_variance, sample_variance;
+    int index = 0, number = 0, num_modes = 0;
+    double *set, *modes; //the set and others
+    double mean, median, population_variance, sample_variance; //the outputs
     printf("Statistical Calculator\nInput how many numbers you want to put in a set(Input 0 to exit)\n");
 
     //Memory allocation for the array
@@ -118,7 +126,7 @@ int main () {
         } else if(number > 30) {
             printf("\nOk this is way too much\n");
         }
-        set = (int *)malloc(number * sizeof(int));
+        set = (double *)malloc(number * sizeof(double));
         if(set == NULL) {
             printf("\nMEMORY ALLOCATION FAILED\n");
             return 1;
@@ -128,7 +136,7 @@ int main () {
     //The Statistics itself
     printf("\nNow Input the numbers, maximum of %d (input 69420 if you want to stop)\n", number);
     for /*The loop for initializing*/ (int j = 0;j<number;j++) {
-        scanf("%d", &set[index]);
+        scanf("%lf", &set[index]);
         if(set[index] == 69420) {
             printf("\nOK\n");
             break;
@@ -136,7 +144,7 @@ int main () {
         index++;
     }
 
-    qsort(set, index, sizeof(int), sort); //sorts the array from lowest to highest
+    qsort(set, index, sizeof(double), sort); //sorts the array from lowest to highest
     mean = MeanCalculate(set, index);
     median = MedianCalculate(set, index);
     modes = FindMode(set, index, &num_modes);
@@ -144,18 +152,18 @@ int main () {
     population_variance = VarianceCalculate(set, index, mean, false);
     printf("\nResults\nSet (organized lowest to highest): ");
     for(int i = 0;i<index;i++) { //loop that prints the arranged values of the array
-        printf("%d ", set[i]);
+        printf("%.2lf ", set[i]);
     }
-    printf("\nMean: %.2f\nMedian: %.2f\nMode(s): ", mean, median);
+    printf("\nMean: %.2lf\nMedian: %.2lf\nMode(s): ", mean, median);
     if(num_modes == 0) {
         printf("No Mode\n");
     } else {
         for(int h = 0;h < num_modes;h++) {
-            printf("%d ", modes[h]);
+            printf("%.2lf ", modes[h]);
         }
     }
-    printf("\nMin: %d\nMax: %d\nRange: %d", set[0], set[index - 1], (set[index - 1] - set[0]));
-    printf("\nSample Variance: %.2f\nPopulation Variance: %.2f\nSample Standard Deviation: %.2f\nPopulation Standard Deviation: %.2f", sample_variance, population_variance, sqrt(sample_variance), sqrt(population_variance));
+    printf("\nMin: %.2lf\nMax: %.2lf\nRange: %.2lf", set[0], set[index - 1], (set[index - 1] - set[0]));
+    printf("\nSample Variance: %.2lf\nPopulation Variance: %.2lf\nSample Standard Deviation: %.2lf\nPopulation Standard Deviation: %.2lf", sample_variance, population_variance, sqrt(sample_variance), sqrt(population_variance));
     free(modes);
     free(set);
 }
