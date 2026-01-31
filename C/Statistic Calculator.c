@@ -9,10 +9,9 @@ int sort (const void *a, const void *b) { //the sorting algorithm
         return 1;
     } else if(*x < *y) {
         return -1;
-    }
-    else {
+    } else {
         return 0;
-    } //x - y = positive number means higher, x - y = negative means lower number thus staying. Not too sure to explain ngl
+    } // Positive: x goes right, Negative: x goes left, Zero: equal
 }
 double /*Calculates the Mean*/ MeanCalculate (double set[], int index) {
     double sum = 0;
@@ -167,3 +166,4 @@ int main () {
     free(modes);
     free(set);
 }
+
