@@ -135,7 +135,12 @@ int main () {
     //The Statistics itself
     printf("\nNow Input the numbers, maximum of %d (input 69420 if you want to stop)\n", number);
     for /*The loop for initializing*/ (int j = 0;j<number;j++) {
-        scanf("%lf", &set[index]);
+        if(scanf("%lf", &set[index]) != 1) { //input statement and condition for checking if input was valid
+            printf("That's not a number...\n");
+            while(getchar() != '\n'); //
+            j--;
+            continue;
+        }
         if(set[index] == 69420) {
             printf("\nOK\n");
             break;
@@ -166,4 +171,3 @@ int main () {
     free(modes);
     free(set);
 }
-
