@@ -101,7 +101,11 @@ double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, do
         difference *= difference;
         sum += difference;
     }
-    variance = sum / (is_sample ? (index - 1) : index);
+    if(index == 1) { //for weirdos who think putting only one number is funny
+        variance = sum;
+    } else {
+        variance = sum / (is_sample ? (index - 1) : index);
+    }
     return variance;
 
 }
@@ -147,7 +151,11 @@ int main () {
         }
         index++;
     }
-
+    if(index == 0) { //if you for some reason input 69420 at the start
+        printf("\nNo numbers input\nEnding the program\n");
+        free(set);
+        return 0;
+    }
     qsort(set, index, sizeof(double), sort); //sorts the array from lowest to highest
     mean = MeanCalculate(set, index);
     median = MedianCalculate(set, index);
