@@ -107,7 +107,6 @@ double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, do
         variance = sum / (is_sample ? (index - 1) : index);
     }
     return variance;
-
 }
 
 int main () {
@@ -168,7 +167,7 @@ int main () {
     }
     printf("\nMean: %.2lf\nMedian: %.2lf\nMode(s): ", mean, median);
     if(num_modes == 0) {
-        printf("No Mode\n");
+        printf("No Mode");
     } else {
         for(int h = 0;h < num_modes;h++) {
             printf("%.2lf ", modes[h]);
