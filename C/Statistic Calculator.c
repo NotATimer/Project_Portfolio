@@ -130,7 +130,7 @@ int main () {
         }
         set = (double *)malloc(number * sizeof(double));
         if(set == NULL) {
-            printf("\nMEMORY ALLOCATION FAILED\n");
+            printf("\nMEMORY ALLOCATION FAILED");
             return 1;
         }
     }
