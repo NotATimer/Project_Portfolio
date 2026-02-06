@@ -151,7 +151,7 @@ int main () {
         index++;
     }
     if(index == 0) { //if you for some reason input 69420 at the start
-        printf("\nNo numbers input\nEnding the program\n");
+        printf("\nNo numbers input\nEnding the program");
         free(set);
         return 0;
     }
@@ -178,3 +178,4 @@ int main () {
     free(modes);
     free(set);
 }
+
