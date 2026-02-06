@@ -178,4 +178,3 @@ int main () {
     free(modes);
     free(set);
 }
-
