@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
-//Fucking hell man
+
 int sort (const void *a, const void *b) { //the sorting algorithm
     double *x = (double *)a, *y = (double *)b;
     if(*x > *y) {
@@ -13,6 +13,7 @@ int sort (const void *a, const void *b) { //the sorting algorithm
         return 0;
     } // Positive: x goes right, Negative: x goes left, Zero: equal
 }
+
 double /*Calculates the Mean*/ MeanCalculate (double set[], int index) {
     double sum = 0;
     for(int i = 0;i < index;i++) {
@@ -165,7 +166,7 @@ int main () {
     for(int i = 0;i<index;i++) { //loop that prints the arranged values of the array
         printf("%.2lf ", set[i]);
     }
-    printf("\nMean: %.2lf\nMedian: %.2lf\nMode(s): ", mean, median);
+    printf("\nMean (μ): %.2lf\nMedian (x̃): %.2lf\nMode(s): ", mean, median);
     if(num_modes == 0) {
         printf("No Mode");
     } else {
@@ -174,7 +175,7 @@ int main () {
         }
     }
     printf("\nMin: %.2lf\nMax: %.2lf\nRange: %.2lf", set[0], set[index - 1], (set[index - 1] - set[0]));
-    printf("\nSample Variance: %.2lf\nPopulation Variance: %.2lf\nSample Standard Deviation: %.2lf\nPopulation Standard Deviation: %.2lf", sample_variance, population_variance, sqrt(sample_variance), sqrt(population_variance));
+    printf("\nSample Variance (s²): %.2lf\nPopulation Variance (σ²): %.2lf\nSample Standard Deviation (s): %.2lf\nPopulation Standard Deviation (σ): %.2lf", sample_variance, population_variance, sqrt(sample_variance), sqrt(population_variance));
     free(modes);
     free(set);
 }
