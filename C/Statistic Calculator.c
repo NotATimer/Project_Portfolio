@@ -111,33 +111,39 @@ double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, do
 }
 
 int main () {
-    int index = 0, number = 0, num_modes = 0;
+    int index = 0, num_modes = 0;
     double *set, *modes; //the set and others
     double mean, median, population_variance, sample_variance; //the outputs
+    long long int number = 0;
     printf("Statistical Calculator\nInput how many numbers you want to put in a set(Input 0 to exit)\n");
 
     //Memory allocation for the array
-    scanf("%d", &number);
+    while(true) { //error handling loop
+        if(scanf("%lld", &number) != 1) {
+            printf("\nThat's not a number\nTry again\n");
+            while(getchar() != '\n');
+        } else {
+            break;
+        }
+    }
     if(number == 0) {
         printf("\nOk, closing program\n");
         return 0;
     } else if(number != 0) {
-        if(number > 10 && number < 20) {
-            printf("\nOk that's a lot\n");
-        } else if (number > 20 && number < 30) {
-            printf("\nDAMN!\n");
-        } else if(number > 30) {
-            printf("\nOk this is way too much\n");
+        if(number >= 100) {
+            printf("\nToo much memory");
+            return 1;
         }
         set = (double *)malloc(number * sizeof(double));
         if(set == NULL) {
             printf("\nMEMORY ALLOCATION FAILED");
+            free(set);
             return 1;
         }
     }
 
     //The Statistics itself
-    printf("\nNow Input the numbers, maximum of %d (input 69420 if you want to stop)\n", number);
+    printf("\nNow Input the numbers, maximum of %lld (input 69420 if you want to stop)\n", number);
     for /*The loop for initializing*/ (int j = 0;j<number;j++) {
         if(scanf("%lf", &set[index]) != 1) { //input statement and condition for checking if input was valid
             printf("That's not a number...\n");
