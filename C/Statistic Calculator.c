@@ -133,11 +133,13 @@ int main () {
         if(number >= 100) {
             printf("\nToo much memory");
             return 1;
+        } else if(number > 0) {
+            printf("\nNice try, negative numbers won't work.");
+            return 1;
         }
         set = (double *)malloc(number * sizeof(double));
         if(set == NULL) {
             printf("\nMEMORY ALLOCATION FAILED");
-            free(set);
             return 1;
         }
     }
