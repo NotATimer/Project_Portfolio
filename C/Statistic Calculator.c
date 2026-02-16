@@ -110,66 +110,7 @@ double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, do
     return variance;
 }
 
-int main () {
-    int index = 0, num_modes = 0;
-    double *set, *modes; //the set and others
-    double mean, median, population_variance, sample_variance; //the outputs
-    long long int number = 0;
-    printf("Statistical Calculator\nInput how many numbers you want to put in a set(Input 0 to exit)\n");
-
-    //Memory allocation for the array
-    while(true) { //error handling loop
-        if(scanf("%lld", &number) != 1) {
-            printf("\nThat's not a number\nTry again\n");
-            while(getchar() != '\n');
-        } else {
-            break;
-        }
-    }
-    if(number == 0) {
-        printf("\nOk, closing program\n");
-        return 0;
-    } else if(number != 0) {
-        if(number >= 100) {
-            printf("\nToo much memory");
-            return 1;
-        } else if(number < 0) {
-            printf("\nNice try, negative numbers won't work.");
-            return 1;
-        }
-        set = (double *)malloc(number * sizeof(double));
-        if(set == NULL) {
-            printf("\nMEMORY ALLOCATION FAILED");
-            return 1;
-        }
-    }
-
-    //The Statistics itself
-    printf("\nNow Input the numbers, maximum of %lld (input 69420 if you want to stop)\n", number);
-    for /*The loop for initializing*/ (int j = 0;j<number;j++) {
-        if(scanf("%lf", &set[index]) != 1) { //input statement and condition for checking if input was valid
-            printf("That's not a number...\n");
-            while(getchar() != '\n'); //
-            j--;
-            continue;
-        }
-        if(set[index] == 69420) {
-            printf("\nOK\n");
-            break;
-        }
-        index++;
-    }
-    if(index == 0) { //if you for some reason input 69420 at the start
-        printf("\nNo numbers input\nEnding the program");
-        free(set);
-        return 0;
-    }
-    qsort(set, index, sizeof(double), sort); //sorts the array from lowest to highest
-    mean = MeanCalculate(set, index);
-    median = MedianCalculate(set, index);
-    modes = FindMode(set, index, &num_modes);
-    sample_variance = VarianceCalculate(set, index, mean, true);
-    population_variance = VarianceCalculate(set, index, mean, false);
+void display(double set[], int index, double mean, double median, double modes[], int num_modes, double sample_variance, double population_variance) {
     printf("\nResults\nSet (organized lowest to highest): ");
     for(int i = 0;i<index;i++) { //loop that prints the arranged values of the array
         printf("%.2lf ", set[i]);
@@ -184,7 +125,78 @@ int main () {
     }
     printf("\nMin: %.2lf\nMax: %.2lf\nRange: %.2lf", set[0], set[index - 1], (set[index - 1] - set[0]));
     printf("\nSample Variance (s²): %.2lf\nPopulation Variance (σ²): %.2lf\nSample Standard Deviation (s): %.2lf\nPopulation Standard Deviation (σ): %.2lf", sample_variance, population_variance, sqrt(sample_variance), sqrt(population_variance));
-    free(modes);
-    free(set);
 }
 
+int main() {
+    char repeat;
+    double *set, *modes; //the set and others
+    double mean, median, population_variance, sample_variance; //the outputs
+    long long int number = 0;
+    printf("Statistical calculator\n");
+    do { //loops the program
+        int index = 0, num_modes = 0;
+        printf("\nInput how many numbers you want to put in a set(Input 0 to exit)\n");
+    
+        //Memory allocation for the array
+        while(true) { //error handling loop
+            if(scanf("%lld", &number) != 1) {
+                printf("\nThat's not a number\nTry again\n");
+                while(getchar() != '\n');
+            } else {
+                break;
+            }
+        }
+        if(number == 0) {
+            printf("\nOk, closing program\n");
+            return 0;
+        } else if(number != 0) {
+            if(number >= 100) {
+                printf("\nToo much memory");
+                return 1;
+            } else if(number < 0) {
+                printf("\nNice try, negative numbers won't work.");
+                return 1;
+            }
+            set = (double *)malloc(number * sizeof(double));
+            if(set == NULL) {
+                printf("\nMEMORY ALLOCATION FAILED");
+                return 1;
+            }
+        }
+    
+        //The Statistics itself
+        printf("\nNow Input the numbers, maximum of %lld (input 69420 if you want to stop)\n", number);
+        for /*The loop for initializing*/ (int j = 0;j<number;j++) {
+            if(scanf("%lf", &set[index]) != 1) { //input statement and condition for checking if input was valid
+                printf("That's not a number...\n");
+                while(getchar() != '\n'); //
+                j--;
+                continue;
+            }
+            if(set[index] == 69420) {
+                printf("\nOK\n");
+                break;
+            }
+            index++;
+        }
+        if(index == 0) { //if you for some reason input 69420 at the start
+            printf("\nNo numbers input\nEnding the program");
+            free(set);
+            return 0;
+        }
+        qsort(set, index, sizeof(double), sort); //sorts the array from lowest to highest
+        mean = MeanCalculate(set, index);
+        median = MedianCalculate(set, index);
+        modes = FindMode(set, index, &num_modes);
+        sample_variance = VarianceCalculate(set, index, mean, true);
+        population_variance = VarianceCalculate(set, index, mean, false);
+        display(set, index, mean, median, modes, num_modes, sample_variance, population_variance);
+        free(modes);
+        free(set);
+        printf("\n\nContinue using? (y to continue, anything else to stop): ");
+        scanf(" %c", &repeat);
+        while(getchar() != '\n');
+    } while(repeat == 'y' || repeat == 'Y');
+    printf("\nEnding Program");
+    return 0;
+}
