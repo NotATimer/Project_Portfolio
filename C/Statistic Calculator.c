@@ -2,6 +2,46 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
+
+void initialize /*Function for initializing values*/ (double **set, int *index) {
+    char buffer[101], *endptr; //input buffer
+    int multiple = 10;
+    *set = (double *)malloc(sizeof(double) * multiple); //initial memory allocation
+    while(true) {
+        fgets(buffer, 100, stdin);
+        buffer[strcspn(buffer, "\n")] = '\0';
+        if(buffer[0] == '\0') { //no input
+            printf("You didn't input anything!\n");
+            continue;
+        }
+        if(strcmp(buffer, "s") == 0 || strcmp(buffer, "S") == 0) { //for cancelling input
+            printf("\nStopping\n");
+            if(*index < multiple) {
+                *set = (double *)realloc(*set, sizeof(double) * *index);
+            }
+            break;
+        }
+        //converts the string into a double
+        double value = strtod(buffer, &endptr);
+        if(*index == multiple) {
+            multiple += 10;
+            *set = (double *)realloc(*set, sizeof(double) * multiple);
+        }
+        if(endptr == buffer) {
+            printf("Invalid input, please try again\n");
+            continue;
+        }
+        else if(*endptr != '\0') {
+            printf("Invalid input, please try again\n");
+            continue;
+        }
+        else {
+            (*set)[*index] = value;
+            (*index)++;
+        }
+    }
+}
 
 int sort (const void *a, const void *b) { //the sorting algorithm
     double *x = (double *)a, *y = (double *)b;
@@ -110,88 +150,65 @@ double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, do
     return variance;
 }
 
-void display(double set[], int index, double mean, double median, double modes[], int num_modes, double sample_variance, double population_variance) {
+double* zscore(double set[], int index, double mean, double std) {
+    double *zscores = (double *)malloc(sizeof(double) * index);
+    for(int i = 0;i < index;i++) {
+        zscores[i] = (set[i] - mean) / std;
+    }
+    return zscores;
+}
+
+void display(double set[], int index, double mean, double median, double modes[], int num_modes, double population_variance, double population_zscore[], double sample_variance, double sample_zscore[]) {
     printf("\nResults\nSet (organized lowest to highest): ");
-    for(int i = 0;i<index;i++) { //loop that prints the arranged values of the array
-        printf("%.2lf ", set[i]);
+    for(int h = 0;h<index;h++) { //loop that prints the arranged values of the array
+        printf("%.2lf ", set[h]);
+    }
+    printf("\nPopulation Z-Scores:");
+    for(int i = 0;i < index;i++) {
+        printf(" %.2lf", population_zscore[i]);
+    }
+    printf("\nSample Z-Scores:");
+    for(int j = 0;j < index;j++) {
+        printf(" %.2lf", sample_zscore[j]);
     }
     printf("\nMean (μ): %.2lf\nMedian (x̃): %.2lf\nMode(s): ", mean, median);
     if(num_modes == 0) {
         printf("No Mode");
     } else {
-        for(int h = 0;h < num_modes;h++) {
-            printf("%.2lf ", modes[h]);
+        for(int k = 0;k < num_modes;k++) {
+            printf("%.2lf ", modes[k]);
         }
     }
     printf("\nMin: %.2lf\nMax: %.2lf\nRange: %.2lf", set[0], set[index - 1], (set[index - 1] - set[0]));
-    printf("\nSample Variance (s²): %.2lf\nPopulation Variance (σ²): %.2lf\nSample Standard Deviation (s): %.2lf\nPopulation Standard Deviation (σ): %.2lf", sample_variance, population_variance, sqrt(sample_variance), sqrt(population_variance));
+    printf("\nPopulation Variance (σ²): %.2lf\nPopulation Standard Deviation (σ): %.2lf", population_variance, sqrt(population_variance));
+    printf("\nSample Variance (s²): %.2lf\nSample Standard Deviation: %.2lf", sample_variance, sqrt(sample_variance));
 }
 
 int main() {
     char repeat;
-    double *set, *modes; //the set and others
+    double *set, *modes, *population_zscore, *sample_zscore; //the set and others
     double mean, median, population_variance, sample_variance; //the outputs
-    long long int number = 0;
     printf("Statistical calculator\n");
     do { //loops the program
         int index = 0, num_modes = 0;
-        printf("\nInput how many numbers you want to put in a set(Input 0 to exit)\n");
-    
-        //Memory allocation for the array
-        while(true) { //error handling loop
-            if(scanf("%lld", &number) != 1) {
-                printf("\nThat's not a number\nTry again\n");
-                while(getchar() != '\n');
-            } else {
-                break;
-            }
+        printf("\nInput the numbers(Put s if you want to stop)\n");
+        initialize(&set, &index); //function for initializing
+        if(set == NULL) {
+            printf("\nYou didn't input anything!");
+        } else {
+            qsort(set, index, sizeof(double), sort); //sorts the array from lowest to highest
+            mean = MeanCalculate(set, index);
+            median = MedianCalculate(set, index);
+            modes = FindMode(set, index, &num_modes);
+            population_variance = VarianceCalculate(set, index, mean, false);
+            sample_variance = VarianceCalculate(set, index, mean, true);
+            population_zscore = zscore(set, index, mean, sqrt(population_variance));
+            sample_zscore = zscore(set, index, mean, sqrt(sample_variance));
+            display(set, index, mean, median, modes, num_modes, population_variance, population_zscore, sample_variance, sample_zscore);
+            free(modes);
+            free(population_zscore);
+            free(sample_zscore);
         }
-        if(number == 0) {
-            printf("\nOk, closing program\n");
-            return 0;
-        } else if(number != 0) {
-            if(number >= 100) {
-                printf("\nToo much memory");
-                return 1;
-            } else if(number < 0) {
-                printf("\nNice try, negative numbers won't work.");
-                return 1;
-            }
-            set = (double *)malloc(number * sizeof(double));
-            if(set == NULL) {
-                printf("\nMEMORY ALLOCATION FAILED");
-                return 1;
-            }
-        }
-    
-        //The Statistics itself
-        printf("\nNow Input the numbers, maximum of %lld (input 69420 if you want to stop)\n", number);
-        for /*The loop for initializing*/ (int j = 0;j<number;j++) {
-            if(scanf("%lf", &set[index]) != 1) { //input statement and condition for checking if input was valid
-                printf("That's not a number...\n");
-                while(getchar() != '\n'); //
-                j--;
-                continue;
-            }
-            if(set[index] == 69420) {
-                printf("\nOK\n");
-                break;
-            }
-            index++;
-        }
-        if(index == 0) { //if you for some reason input 69420 at the start
-            printf("\nNo numbers input\nEnding the program");
-            free(set);
-            return 0;
-        }
-        qsort(set, index, sizeof(double), sort); //sorts the array from lowest to highest
-        mean = MeanCalculate(set, index);
-        median = MedianCalculate(set, index);
-        modes = FindMode(set, index, &num_modes);
-        sample_variance = VarianceCalculate(set, index, mean, true);
-        population_variance = VarianceCalculate(set, index, mean, false);
-        display(set, index, mean, median, modes, num_modes, sample_variance, population_variance);
-        free(modes);
         free(set);
         printf("\n\nContinue using? (y to continue, anything else to stop): ");
         scanf(" %c", &repeat);
