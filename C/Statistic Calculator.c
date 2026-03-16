@@ -25,7 +25,7 @@ void initialize /*Function for initializing values*/ (double **set, int *index) 
         //converts the string into a double
         double value = strtod(buffer, &endptr);
         if(*index == multiple) {
-            multiple += 10;
+            multiple *= 2;
             *set = (double *)realloc(*set, sizeof(double) * multiple);
         }
         if(endptr == buffer) {
