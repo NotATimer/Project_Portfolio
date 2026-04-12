@@ -3,42 +3,93 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <ctype.h>
 
 void initialize /*Function for initializing values*/ (double **set, int *index) {
-    char buffer[101], *endptr; //input buffer
+    char buffer[101]; //input buffer
     int multiple = 10;
+    double* temp;
     *set = (double *)malloc(sizeof(double) * multiple); //initial memory allocation
     while(true) {
         fgets(buffer, 100, stdin);
         buffer[strcspn(buffer, "\n")] = '\0';
-        if(buffer[0] == '\0') { //no input
-            printf("You didn't input anything!\n");
+        if(buffer[0] == '\0') { //if empty input
             continue;
         }
-        if(strcmp(buffer, "s") == 0 || strcmp(buffer, "S") == 0) { //for cancelling input
+        if(strcmp(buffer, "h") == 0 || strcmp(buffer, "H") == 0) { //for cancelling input
+            printf("s - stops input strream\nd - deletes previous input\nr - resets entire input stream\n");
+            continue;
+        }
+        else if(strcmp(buffer, "s") == 0 || strcmp(buffer, "S") == 0) { //for cancelling input
             printf("\nStopping\n");
             if(*index < multiple) {
-                *set = (double *)realloc(*set, sizeof(double) * *index);
+                temp = (double *)realloc(*set, sizeof(double) * *index);
+                if(temp == NULL) {
+                    printf("MEMORY ALLOCATION FAIL!");
+                    exit(1);
+                }
+                else {
+                    *set = temp;
+                }
             }
             break;
         }
-        //converts the string into a double
-        double value = strtod(buffer, &endptr);
-        if(*index == multiple) {
-            multiple *= 2;
+        else if(strcmp(buffer, "d") == 0 || strcmp(buffer, "D") == 0) { //for removing previous instance
+            if(*index == 0) {
+                printf("There is nothing to delete\n");
+                continue;
+            }
+            else {
+                printf("Deleted previous instance\n");
+                (*index)--;
+                continue;
+            }
+        }
+        else if(strcmp(buffer, "r") == 0 || strcmp(buffer, "R") == 0) { //for resetting the entire stream
+            printf("Stream Reset\n");
+            (*index) = 0;
+            multiple = 10;
             *set = (double *)realloc(*set, sizeof(double) * multiple);
-        }
-        if(endptr == buffer) {
-            printf("Invalid input, please try again\n");
             continue;
         }
-        else if(*endptr != '\0') {
-            printf("Invalid input, please try again\n");
+        //checks if valid
+        int found = 0;
+        for(int i = 0;i < strlen(buffer);i++) { //loops through entire string
+            if(isalpha(buffer[i])) { //increases counter if there is a letter
+                found++;
+            }
+            else if(ispunct(buffer[i]) && buffer[i] != '.') { //increases counter if there is a punctuation except for a period
+                found++;
+            }
+        }
+        if(found > 0) {
+            printf("Invalid input!\n");
             continue;
         }
-        else {
+        char *current = buffer, *endptr;
+        while(true) {
+            double value = strtod(current, &endptr);
+            while(isspace(*endptr)) { //checks for spaces
+                endptr++; //moves to the next column
+            }
             (*set)[*index] = value;
             (*index)++;
+            if(*index == multiple) { //changes size of array if you went beyond
+                multiple *= 2;
+                temp = (double *)realloc(*set, sizeof(double) * multiple);
+                if(temp == NULL) {
+                    printf("MEMORY ALLOCATION FAILED!");
+                    exit(1);
+                }
+                else {
+                    *set = temp;
+                }
+            }
+            if(*endptr == '\0') { //checks for the null terminator then ends loop
+                break;
+            }
+            current = endptr;
+            continue;
         }
     }
 }
@@ -151,6 +202,9 @@ double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, do
 }
 
 double* zscore(double set[], int index, double mean, double std) {
+    if(index == 1) {
+        return NULL;
+    }
     double *zscores = (double *)malloc(sizeof(double) * index);
     for(int i = 0;i < index;i++) {
         zscores[i] = (set[i] - mean) / std;
@@ -163,13 +217,23 @@ void display(double set[], int index, double mean, double median, double modes[]
     for(int h = 0;h<index;h++) { //loop that prints the arranged values of the array
         printf("%.2lf ", set[h]);
     }
-    printf("\nPopulation Z-Scores:");
-    for(int i = 0;i < index;i++) {
-        printf(" %.2lf", population_zscore[i]);
+    if(index == 1) {
+        printf("\nPopulation Z-Scores: undefined");
     }
-    printf("\nSample Z-Scores:");
-    for(int j = 0;j < index;j++) {
-        printf(" %.2lf", sample_zscore[j]);
+    else {
+        printf("\nPopulation Z-Scores:");
+        for(int i = 0;i < index;i++) {
+            printf(" %.2lf", population_zscore[i]);
+        }
+    }
+    if(index == 1) {
+        printf("\nSample Z-Scores: undefined");
+    }
+    else {
+        printf("\nSample Z-Scores:");
+        for(int j = 0;j < index;j++) {
+            printf(" %.2lf", sample_zscore[j]);
+        }
     }
     printf("\nMean (μ): %.2lf\nMedian (x̃): %.2lf\nMode(s): ", mean, median);
     if(num_modes == 0) {
@@ -181,7 +245,12 @@ void display(double set[], int index, double mean, double median, double modes[]
     }
     printf("\nMin: %.2lf\nMax: %.2lf\nRange: %.2lf", set[0], set[index - 1], (set[index - 1] - set[0]));
     printf("\nPopulation Variance (σ²): %.2lf\nPopulation Standard Deviation (σ): %.2lf", population_variance, sqrt(population_variance));
-    printf("\nSample Variance (s²): %.2lf\nSample Standard Deviation: %.2lf", sample_variance, sqrt(sample_variance));
+    if(index == 1) {
+        printf("\nSample Variance (s²): undefined\nSample Standard Deviation: undefined");
+    }
+    else {
+        printf("\nSample Variance (s²): %.2lf\nSample Standard Deviation: %.2lf", sample_variance, sqrt(sample_variance));
+    }
 }
 
 int main() {
@@ -191,7 +260,7 @@ int main() {
     printf("Statistical calculator\n");
     do { //loops the program
         int index = 0, num_modes = 0;
-        printf("\nInput the numbers(Put s if you want to stop)\n");
+        printf("\nInput the numbers(Enter 'h' for list of commands)\n");
         initialize(&set, &index); //function for initializing
         if(set == NULL) {
             printf("\nYou didn't input anything!");
