@@ -22,6 +22,9 @@ void initialize /*Function for initializing values*/ (double **set, int *index) 
         }
         else if(strcmp(buffer, "s") == 0 || strcmp(buffer, "S") == 0) { //for cancelling input
             printf("\nStopping\n");
+            if(*index == 0) {
+                *set = NULL;
+            }
             if(*index < multiple) {
                 temp = (double *)realloc(*set, sizeof(double) * *index);
                 if(temp == NULL) {
