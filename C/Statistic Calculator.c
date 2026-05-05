@@ -74,7 +74,7 @@ void initialize /*Function for initializing values*/ (struct data *sheet) {
             if(isalpha(buffer[i])) { //increases counter if there is a letter
                 found++;
             }
-            else if(ispunct(buffer[i]) && buffer[i] != '.') { //increases counter if there is a punctuation except for a period
+            else if(ispunct(buffer[i]) && buffer[i] != '.' && buffer[i] != '-') { //increases counter if there is a punctuation except for a period
                 found++;
             }
         }
@@ -218,7 +218,7 @@ double /*Calculates the Variance*/ VarianceCalculate(double set[], int index, do
 }
 
 double* zscore(double set[], int index, double mean, double std) {
-    if(index == 1) {
+    if(index == 1 || std == 0) {
         return NULL;
     }
     double *zscores = (double *)malloc(sizeof(double) * index);
@@ -233,7 +233,7 @@ void display(struct data sheet) {
     for(int h = 0;h<sheet.index;h++) { //loop that prints the arranged values of the array
         printf("%.2lf ", sheet.set[h]);
     }
-    if(sheet.index == 1) {
+    if(sheet.index == 1 || sheet.population_zscore == NULL) {
         printf("\nPopulation Z-Scores: undefined");
     }
     else {
@@ -242,7 +242,7 @@ void display(struct data sheet) {
             printf(" %.2lf", sheet.population_zscore[i]);
         }
     }
-    if(sheet.index == 1) {
+    if(sheet.index == 1 || sheet.sample_zscore == NULL) {
         printf("\nSample Z-Scores: undefined");
     }
     else {
