@@ -6,8 +6,7 @@
 #include <ctype.h>
 
 struct data {
-    int index;
-    int num_modes;
+    int index, num_modes;
     double *set, *modes, *population_zscore, *sample_zscore;
     double mean, median, population_variance, sample_variance;
 };
