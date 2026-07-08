@@ -6,7 +6,8 @@
 #include <ctype.h>
 
 struct data {
-    int index, num_modes;
+    int index;
+    int num_modes;
     double *set, *modes, *population_zscore, *sample_zscore;
     double mean, median, population_variance, sample_variance;
 };
@@ -23,7 +24,7 @@ void initialize /*Function for initializing values*/ (struct data *sheet) {
             continue;
         }
         if(strcmp(buffer, "h") == 0 || strcmp(buffer, "H") == 0) { //for cancelling input
-            printf("s - stops input strream\nd - deletes previous input\nr - resets entire input stream\n");
+            printf("s - stops input stream\nd - deletes previous input\nr - resets entire input stream\np - views initial array\n");
             continue;
         }
         else if(strcmp(buffer, "s") == 0 || strcmp(buffer, "S") == 0) { //for cancelling input
@@ -66,6 +67,18 @@ void initialize /*Function for initializing values*/ (struct data *sheet) {
             else {
                 sheet->set = temp;
             }
+            continue;
+        }
+        else if(strcmp(buffer, "p") == 0 || strcmp(buffer, "P") == 0) { //viewing the current array
+            if(sheet->index == 0) {
+                printf("The array is empty");
+            }
+            else {
+                for(int q = 0;q < sheet->index;q++) {
+                    printf("%.2lf ", sheet->set[q]);
+                }
+            }
+            printf("\n");
             continue;
         }
         //checks if valid
