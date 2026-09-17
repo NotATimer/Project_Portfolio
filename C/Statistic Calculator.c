@@ -11,14 +11,27 @@ struct data {
     double mean, median, population_variance, sample_variance;
 };
 
+void remove_comma /*Helper Function to remove commas*/ (char *str) {
+    int i = 0, j = 0;
+    while(str[i] != '\0') {
+        if(str[i] != ',') {
+            str[j] = str[i];
+            j++;
+        }
+        i++;
+    }
+    str[j] = '\0';
+} 
+
 void initialize /*Function for initializing values*/ (struct data *sheet) {
-    char buffer[101]; //input buffer
+    char buffer[1001]; //input buffer
     int multiple = 10;
     double* temp;
     sheet->set = (double *)malloc(sizeof(double) * multiple); //initial memory allocation
     while(true) {
-        fgets(buffer, 100, stdin);
+        fgets(buffer, 1000, stdin);
         buffer[strcspn(buffer, "\n")] = '\0';
+        remove_comma(buffer);
         if(buffer[0] == '\0') { //if empty input
             continue;
         }
